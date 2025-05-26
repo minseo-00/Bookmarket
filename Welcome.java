@@ -1,6 +1,13 @@
-package MainMenu;
+package com.market.main;
 
 import java.util.Scanner;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import com.market.bookitem.Book; // Book 클래스 사용하기 위한 선언
+import com.market.cart.Cart; // Cart 클래스 사용하기 위한 선언
+import com.market.member.Admin; // Admin 클래스 사용하기 위한 선언
+import com.market.member.User; // User 클래스 사용하기 위한 선언
 
 public class Welcome {
 	static final int NUM_BOOK = 3; // 도서의 개수에 대한 상수 NUM_BOOK 선언
@@ -20,7 +27,7 @@ public class Welcome {
 		System.out.println("***************************************");
 	}
 
-	public static void menuGuestInfo(String name, int mobile) { // 사용자 정보 출력하는 메서드
+	public static void menuGuestInfo(String name, int mobile) { // 고객 정보 확인하는 메서드
 		System.out.println("현재 고객 정보 : ");
 		System.out.println("이름 "+ mUser.getName() + " 연락처 " + mUser.getPhone());
 		
@@ -29,7 +36,7 @@ public class Welcome {
 		// System.out.println("이름 " + person.getName() + "   연락처 " + person.getPhone());
 	}
 
-	public static void menuCartItemList() {
+	public static void menuCartItemList() { // 장바구니 상품 목록 확인하는 메서드
 		/*
 		System.out.println("장바구니 상품 목록 :");
 		System.out.println("-----------------------------------------------");
@@ -130,7 +137,7 @@ public class Welcome {
 		return mCart.isCartInBook(bookId);
 	}
 
-	public static void menuCartRemoveItemCount() {
+	public static void menuCartRemoveItemCount() { // 장바구니의 항목 수량 줄이는 메서드
 		System.out.println("5. 장바구니의 항목 수량 줄이기");
 	}
 
@@ -170,15 +177,57 @@ public class Welcome {
 		}
 	}
 
-	public static void menuCartBill() {
-		System.out.println("7. 영수증 표시하기");
+	public static void menuCartBill() { // 주문 처리를 위한 고객의 정보 저장하는 메서드
+		// System.out.println("7. 영수증 표시하기");
+		if(mCart.mCartCount == 0) System.out.println("장바구니에 항목이 없습니다.");
+		
+		else {
+			System.out.println("배송받을 분은 고객 정보와 같습니까? Y | N ");
+			Scanner input = new Scanner(System.in);
+			String str = input.nextLine();
+			
+			if(str.toUpperCase().equals("Y")) {
+				System.out.println("배송지를 입력해주세요 ");
+				String address = input.nextLine();
+				printBill(mUser.getName(), String.valueOf(mUser.getPhone()), address); // 배송을 위한 고객정보와 영수증 출력을 위한 printBill 메서드 호출
+			}
+			else {
+				System.out.print("배송받을 고객명을 입력하세요 ");
+				String name = input.nextLine();
+				System.out.print("배송받을 고객의 연락처를 입력하세요 ");
+				String phone = input.nextLine();
+				System.out.print("배송받을 고객의 배송지를 입력해주세요 ");
+				String address = input.nextLine();
+				printBill(name, phone, address);
+			}
+		}
+	}
+	
+	public static void printBill(String name, String phone, String address) {  // 주문 처리 후 영수증을 표시하는 메서드
+		Date date = new Date(); // MM/dd/yyyy 형식의 현재 날짜 정보를 엳음
+		SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
+		String strDate = formatter.format(date);
+		System.out.println();
+		System.out.println("----------------배송받을 고객 정보-----------------");
+		System.out.println("고객명 : "+ name + "   \t\t연락처 : " + phone);
+		System.out.println("배송지 : "+ address + "   \t\t발송일 : " + strDate);
+		
+		mCart.printCart(); // 장바구니에 담긴 항목 출력
+		
+		int sum = 0;
+		for(int i = 0; i < mCart.mCartCount; i++)
+			sum += mCart.mCartItem[i].getTotalPrice();
+		
+		System.out.println("\t\t\t주문 총금액 : " + sum + "원\n");
+		System.out.println("-----------------------------------------------");
+		System.out.println();
 	}
 
-	public static void menuExit() {
+	public static void menuExit() { // 종료하는 메서드
 		System.out.println("8. 종료");
 	}
 	
-	public static void menuAdminLogin() {
+	public static void menuAdminLogin() {    // 관리자 로그인 메서드
 		System.out.println("관리자 정보를 입력하세요");
 		
 		Scanner input = new Scanner(System.in);
