@@ -1,11 +1,13 @@
 package com.market.main;
 
 import java.util.Scanner;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.ArrayList;
 
 import com.market.bookitem.Book; // Book 클래스 사용하기 위한 선언
 import com.market.cart.Cart; // Cart 클래스 사용하기 위한 선언
@@ -73,7 +75,7 @@ public class Welcome {
 		}
 	}
 
-	public static void menuCartAddItem(Book[] booklist) { // String[][] book -> Book[] booklist 변경 매개변수 추가, 장바구니에 도서를
+	public static void menuCartAddItem(ArrayList<Book> booklist) { // String[][] book -> Book[] booklist 변경 매개변수 추가, 장바구니에 도서를
 															// 추가하는 메서드
 		// System.out.println("장바구니에 항목 추가하기 : ");
 
@@ -97,8 +99,8 @@ public class Welcome {
 			boolean flag = false;
 			int numId = -1;
 
-			for (int i = 0; i < NUM_BOOK; i++) { // 입력된 도서의 ID와 저장되어 있는 도서 정보의 ID가 일치하는지 확인하여
-				if (str.equals(booklist[i].getBookId())) { // 일치하면 도서 정보의 numId(인덱스 번호)와 flag(일치 여부) 변수에 값을 변경하여 저장하고
+			for (int i = 0; i < booklist.size(); i++) { // 입력된 도서의 ID와 저장되어 있는 도서 정보의 ID가 일치하는지 확인하여
+				if (str.equals(booklist.get(i).getBookId())) { // 일치하면 도서 정보의 numId(인덱스 번호)와 flag(일치 여부) 변수에 값을 변경하여 저장하고
 															// 반복문 종료
 					numId = i;
 					flag = true;
@@ -112,11 +114,11 @@ public class Welcome {
 				str = input.nextLine(); // 장바구니에 도서 추가 여부를 위한 입력값을 받음
 
 				if (str.toUpperCase().equals("Y")) { // 입력값을 대문자로 변경하여 Y이면 '도서가 장바구니에 추가되었습니다.' 출력
-					System.out.println(booklist[numId].getBookId() + "도서가 장바구니에 추가되었습니다.");
+					System.out.println(booklist.get(numId).getBookId() + "도서가 장바구니에 추가되었습니다.");
 
 					// 장바구니에 넣기
-					if (!isCartInBook(booklist[numId].getBookId()))
-						mCart.insertBook(booklist[numId]);
+					if (!isCartInBook(booklist.get(numId).getBookId()))
+						mCart.insertBook(booklist.get(numId));
 				}
 
 				quit = true;
@@ -156,7 +158,7 @@ public class Welcome {
 				int numId = -1;
 
 				for (int i = 0; i < mCart.mCartCount; i++) {
-					if (str.equals(mCart.mCartItem[i].getBookID())) {
+					if (str.equals(mCart.mCartItem.get(i).getBookID())) {
 						numId = i;
 						flag = true;
 						break;
@@ -167,7 +169,7 @@ public class Welcome {
 					System.out.println("장바구니의 항목을 삭제하시겠습니까? Y | N ");
 					str = input.nextLine();
 					if (str.toUpperCase().equals("Y")) {
-						System.out.println(mCart.mCartItem[numId].getBookID() + "도서가 삭제되었습니다.");
+						System.out.println(mCart.mCartItem.get(numId).getBookID() + "도서가 삭제되었습니다.");
 						mCart.removeCart(numId); // Cart 클래스의 구현된 removeCart 메서드로 도서 삭제 진행
 					}
 					quit = true;
@@ -218,7 +220,7 @@ public class Welcome {
 
 		int sum = 0;
 		for (int i = 0; i < mCart.mCartCount; i++)
-			sum += mCart.mCartItem[i].getTotalPrice();
+			sum += mCart.mCartItem.get(i).getTotalPrice();
 
 		System.out.println("\t\t\t주문 총금액 : " + sum + "원\n");
 		System.out.println("-----------------------------------------------");
@@ -288,7 +290,7 @@ public class Welcome {
 			System.out.println("관리자 정보가 일치하지 않습니다.");
 	}
 
-	public static void BookList(Book[] booklist) { // 도서 정보를 저장하는 메서드
+	public static void BookList(ArrayList<Book> booklist) { // 도서 정보를 저장하는 메서드
 		setFileToBookList(booklist);
 		/*
 		 * booklist[0] = new Book("ISBN1234", "쉽게 배우는 JSP 웹 프로그래밍", 27000);
@@ -356,14 +358,14 @@ public class Welcome {
 		return 0;
 	}
 
-	public static void setFileToBookList(Book[] booklist) { // 파일에서 도서 정보 목록을 읽어 저장하는 매서드
+	public static void setFileToBookList(ArrayList<Book> booklist) { // 파일에서 도서 정보 목록을 읽어 저장하는 매서드
 		try {
 			FileReader fr = new FileReader("book.txt"); // book.txt 파일을 읽기 위한 FileReder 객체 생성
 			BufferedReader reader = new BufferedReader(fr); // 파일에서 한 행씩 읽기 위한 BufferedReader 객체 생성
 
 			String str2;
 			String[] readBook = new String[7];
-			int count = 0;
+//			int count = 0;
 
 			while ((str2 = reader.readLine()) != null) { // 파일에서 읽을 행이 없을 때까지 반복
 				if (str2.contains("ISBN")) { // 파일에서 읽은 한 행에 문자열 "ISBN"이 포함되어 있으면 도서 정보에 대해 한 행씩 읽어 지역변수 readBook에 저장
@@ -376,8 +378,12 @@ public class Welcome {
 					readBook[6] = reader.readLine();
 				}
 
-				booklist[count++] = new Book(readBook[0], readBook[1], Integer.parseInt(readBook[2]), readBook[3],
+//				booklist[count++] = new Book(readBook[0], readBook[1], Integer.parseInt(readBook[2]), readBook[3],
+//						readBook[4], readBook[5], readBook[6]);
+				Book bookitem = new Book(readBook[0], readBook[1], Integer.parseInt(readBook[2]), readBook[3],
 						readBook[4], readBook[5], readBook[6]);
+				
+				booklist.add(bookitem);
 			}
 
 			reader.close(); // BufferedReader 객체 종료
@@ -392,7 +398,8 @@ public class Welcome {
 		// String[][] mbook = new String[NUM_BOOK][NUM_ITEM]; // 도서 정보를 저장할 mBook을 2차원
 		// 배열로 생성
 		// Book[] mBookList = new Book[NUM_BOOK];
-		Book[] mBookList; // 도서 정보를 저장하기 위한 배열
+//		Book[] mBookList; // 도서 정보를 저장하기 위한 배열
+		ArrayList<Book> mBookList;
 		int mTotalBook = 0; // 도서 개수를 저장하기 위한 변수
 		Scanner input = new Scanner(System.in);
 
@@ -456,8 +463,8 @@ public class Welcome {
 //				System.out.println("장바구니에 항목 추가하기 : ");
 						// menuCartAddItem(mbook);
 						mTotalBook = totalFileToBookList(); // totalFileToBookList() 호출하여 도서 개수를 mTotalBook에 저장
-						mBookList = new Book[mTotalBook]; // 도서 개수 mTotalBook에 따라 도서 정보를 저장하기 위한 배열 mBookList 초기화
-						System.out.println("mTotalbook : "+ mTotalBook);
+//						mBookList = new Book[mTotalBook]; // 도서 개수 mTotalBook에 따라 도서 정보를 저장하기 위한 배열 mBookList 초기화
+						mBookList = new ArrayList<Book>();
 						menuCartAddItem(mBookList);
 						break;
 					case 5:
