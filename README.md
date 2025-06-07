@@ -42,5 +42,5 @@ Welcome, CartItem, Person 클래스를 도입하고,
 
 ## ✅ 커밋 내역
 
-feat: CartItem, Person 클래스 추가
-feat: 장바구니 기능 개선 및 Person 적용
+- feat: CartItem, Person 클래스 추가
+- feat: 장바구니 기능 개선 및 Person 적용
