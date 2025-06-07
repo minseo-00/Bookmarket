@@ -7,25 +7,27 @@ public class Welcome {
 	static final int NUM_ITEM = 7; // 도서 정보의 개수에 대한 상수 NUM_ITEM 선언
 	static CartItem[] mCartItem = new CartItem[NUM_BOOK];
 	static int mCartCount = 0;
+	static User mUser;
 
 	public static void menuIntroduction() { // 메뉴 출력하는 메서드
 		System.out.println("***************************************");
-		System.out.println("1. 고객 정보 확인하기 \t4. 바구니에 항목 추가하기");
-		System.out.println("2. 장바구니 상품 목록 보기 \t5. 장바구니의 항목 수량 줄이기");
-		System.out.println("3. 장바구니 비우기 \t6. 장바구니의 항목 삭제하기");
-		System.out.println("7. 영수증 표시하기 \t8. 종료");
+		System.out.println(" 1. 고객 정보 확인하기 \t4. 바구니에 항목 추가하기");
+		System.out.println(" 2. 장바구니 상품 목록 보기 \t5. 장바구니의 항목 수량 줄이기");
+		System.out.println(" 3. 장바구니 비우기 \t6. 장바구니의 항목 삭제하기");
+		System.out.println(" 7. 영수증 표시하기 \t8. 종료");
+		System.out.println(" 9. 관리자 로그인");
 		System.out.println("***************************************");
 	}
 
 	public static void menuGuestInfo(String name, int mobile) { // 고객 정보 확인하는 메서드
 		System.out.println("현재 고객 정보 : ");
-		// System.out.println("이름 " + Name + " 연락처 " + Mobile);
-		
-		Person person = new Person(name, mobile);
-		System.out.println("이름 : " + person.getName() + " 연락처 " + person.getPhone()); 
+		System.out.println("이름 "+ mUser.getName() + " 연락처 " + mUser.getPhone());
+		// System.out.println("이름 " + name + " 연락처 " + mobile);
+		// Person person = new Person(name, mobile);
+		// System.out.println("이름 " + person.getName() + "   연락처 " + person.getPhone());
 	}
 
-	public static void menuCartItemList() { // 장바구니 상품 목록 확인하는 메서드
+	public static void menuCartItemList() {  // 장바구니 상품 목록 확인하는 메서드
 		System.out.println("장바구니 상품 목록 :");
 		System.out.println("-----------------------------------------------");
 		System.out.println("       도서ID \t|     수 량 \t|       합 계");
@@ -37,7 +39,7 @@ public class Welcome {
 		System.out.println("-----------------------------------------------");
 	}
 
-	public static void menuCartClear() { // 장바구니 모든 항목 삭제하는 메서드
+	public static void menuCartClear() {  // 장바구니 모든 항목 삭제하는 메서드
 		System.out.println("장바구니 비우기: ");
 	}
 
@@ -45,6 +47,7 @@ public class Welcome {
 		// System.out.println("장바구니에 항목 추가하기 : ");
 
 		BookList(book); // 도서 정보를 저장하는 메서드 호출
+		
 		for (int i = 0; i < NUM_BOOK; i++) { // 도서 정보 출력
 			for (int j = 0; j < NUM_ITEM; j++)
 				System.out.print(book[i][j] + " | ");
@@ -100,20 +103,38 @@ public class Welcome {
 		return flag;
 	}
 
-	public static void menuCartRemoveItemCount() { // 장바구니의 항목 수량 줄이는 메서드
+	public static void menuCartRemoveItemCount() {  // 장바구니의 항목 수량 줄이는 메서드
 		System.out.println("5. 장바구니의 항목 수량 줄이기");
 	}
 
-	public static void menuCartRemoveItem() { // 장바구니의 항목 삭제하는 메서드
+	public static void menuCartRemoveItem() {  // 장바구니의 항목 삭제하는 메서드
 		System.out.println("6. 장바구니의 항목 삭제하기");
 	}
 
-	public static void menuCartBill() { // 영수증 표시하는 메서드
+	public static void menuCartBill() {  // 영수증 표시하는 메서드
 		System.out.println("7. 영수증 표시하기");
 	}
 
-	public static void menuExit() { // 종료하는 메서드
+	public static void menuExit() {  // 종료하는 메서드
 		System.out.println("8. 종료");
+	}
+	
+	public static void menuAdminLogin() { // 관리자 로그인 메서드
+		System.out.println("관리자 정보를 입력하세요");
+		
+		Scanner input = new Scanner(System.in);
+		System.out.print("아이디: ");
+		String adminId = input.next();
+		
+		System.out.print("비밀번호: ");
+		String adminPW = input.next();
+		
+		Admin admin = new Admin(mUser.getName(), mUser.getPhone());
+		if(adminId.equals(admin.getId()) && adminPW.equals(admin.getPassword())) {
+			System.out.println("이름 "+admin.getName() + " 연락처 " + admin.getPhone());
+			System.out.println("아이디 "+admin.getId() + " 비밀번호 "+admin.getPassword());
+		}else
+			System.out.println("관리자 정보가 일치하지 않습니다.");
 	}
 
 	public static void BookList(String[][] book) { // 도서 정보를 저장하는 메서드
@@ -153,6 +174,8 @@ public class Welcome {
 
 		System.out.print("연락처를 입력하세요 : ");
 		int userMobile = input.nextInt();
+		
+		mUser = new User(userName, userMobile);
 
 		String greeting = "Welcome to Shopping Mall";
 		String tagline = "Welcome to Book Market!";
@@ -180,7 +203,7 @@ public class Welcome {
 
 //		System.out.println(n +"n번을 선택했습니다. ");
 
-			if (n < 1 || n > 8) { // 메뉴 선택 번호가 1~8이 아니면 아래 문자열 출력
+			if (n < 1 || n > 9) { // 메뉴 선택 번호가 1~9이 아니면 아래 문자열 출력
 				System.out.println("1부터 8까지의 숫자를 입력하세요.");
 			}
 
@@ -222,7 +245,9 @@ public class Welcome {
 					menuExit();
 					quit = true; // quit에 true를 넣어 반복문 종료 조건을 충족
 					break;
-
+				case 9:
+					menuAdminLogin();
+					break;
 				}
 			}
 		}
